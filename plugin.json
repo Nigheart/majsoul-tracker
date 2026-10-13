@@ -1,0 +1,145 @@
+{
+  "name": "majsoul_tracker",
+  "version": "0.1.0",
+  "author": "Nigheart",
+  "description": "关注群友雀魂账号状态：对局结果推送（Phase 1）+ 实时对局状态提示与同室对战播报（Phase 2）+ 牌谱链接明细查询（/雀魂牌谱）+ 麻将 AI 复盘（/雀魂分析）",
+  "entry": "main.py",
+  "permissions": ["send_message", "read_data", "write_data", "scheduler", "http"],
+  "min_nonebot_version": "2.5.0",
+  "settings": [
+    {
+      "key": "majsoul_account",
+      "label": "雀魂小号邮箱",
+      "type": "str",
+      "required": true,
+      "desc": "机器人用于查询对局的雀魂小号（国际服）登录邮箱"
+    },
+    {
+      "key": "majsoul_password",
+      "label": "雀魂小号密码",
+      "type": "secret",
+      "required": true,
+      "desc": "仅存 plugin_data/majsoul_tracker/secrets.json，不回显、不打印日志"
+    },
+    {
+      "key": "poll_interval",
+      "label": "对局轮询间隔（秒）",
+      "type": "int",
+      "default": 180,
+      "desc": "Phase 1：轮询绑定玩家最新对局的间隔。对局结束后约 1 分钟可见，默认 180 秒（越小越及时，越大越不易触发风控）"
+    },
+    {
+      "key": "push_rate_limit",
+      "label": "单群每分钟推送上限",
+      "type": "int",
+      "default": 5,
+      "desc": "防刷屏：同一群每分钟最多推送条数，超出则延后到下一轮"
+    },
+    {
+      "key": "provider",
+      "label": "数据源（protocol / thirdparty）",
+      "type": "str",
+      "default": "protocol",
+      "desc": "protocol=官方协议（唯一可用）；thirdparty=第三方牌谱 API（因 CAP 拦截暂不可用，仅占位）"
+    },
+    {
+      "key": "first_bind_backfill",
+      "label": "首次绑定补推历史对局",
+      "type": "bool",
+      "default": false,
+      "desc": "关闭（推荐）：绑定后只推新对局，避免刚绑定就刷屏；开启：把绑定前的最近对局也补推一次"
+    },
+    {
+      "key": "live_enabled",
+      "label": "实时对局状态提示（Phase 2）",
+      "type": "bool",
+      "default": true,
+      "desc": "开启后轮询小号好友列表，推送「对局开始 + 约 5 分钟后可观战」与实时同室对战播报；需群友与小号互为雀魂好友（见 /雀魂加好友）"
+    },
+    {
+      "key": "live_interval",
+      "label": "实时状态轮询间隔（秒）",
+      "type": "int",
+      "default": 120,
+      "desc": "Phase 2：好友状态轮询间隔（仅 live_enabled 开启时生效）；默认 120 秒"
+    },
+    {
+      "key": "live_online_enabled",
+      "label": "上下线通知（Phase 2）",
+      "type": "bool",
+      "default": true,
+      "desc": "好友上线/下线时推送一条提示；关闭后只推对局开始与同室播报"
+    },
+    {
+      "key": "live_online_cooldown",
+      "label": "上下线通知最小间隔（秒）",
+      "type": "int",
+      "default": 300,
+      "desc": "同一好友在此时长内的重复上下线不重复推送，防止好友反复掉线刷屏"
+    },
+    {
+      "key": "room_battle_enabled",
+      "label": "同室对战播报",
+      "type": "bool",
+      "default": true,
+      "desc": "同一群多个已绑定群友进入同一好友房时，推送「xxx、xxx 在房间 xxxxx 决一死战！」"
+    },
+    {
+      "key": "commentary_enabled",
+      "label": "对局结果增强评论",
+      "type": "bool",
+      "default": true,
+      "desc": "结果推送里追加：段位分变化、升/降段与临界提示、连续顺位、被击飞/击飞别人等评论；关闭后只推基础结果"
+    },
+    {
+      "key": "commentary_gap_levels",
+      "label": "升/降段临界档位（分，逗号分隔）",
+      "type": "str",
+      "default": "200,100,50",
+      "desc": "距升段还差（或距掉段只剩）这些分数以内时给提示；留空则用默认 200,100,50"
+    },
+    {
+      "key": "commentary_streak_repeat",
+      "label": "连续同顺位评论阈值（把）",
+      "type": "int",
+      "default": 3,
+      "desc": "连续 N 把都是同一极端顺位（连续一位 / 连续垫底）时评论；默认 3"
+    },
+    {
+      "key": "commentary_streak_absent",
+      "label": "连续无缘顺位评论阈值（把）",
+      "type": "int",
+      "default": 5,
+      "desc": "连续 N 把没拿到一位（或没垫底）时评论；默认 5"
+    },
+    {
+      "key": "heartbeat_interval",
+      "label": "日志心跳间隔（秒）",
+      "type": "int",
+      "default": 300,
+      "desc": "平静期（无新对局、无推送、无错误）也至少每 N 秒写一条状态日志，便于在网页端确认插件存活；填 0 = 每轮都写（日志滚动最快）"
+    },
+    {
+      "key": "image_cards",
+      "label": "推送附图片卡片",
+      "type": "bool",
+      "default": true,
+      "desc": "对局结果 / 同室战报 / 对局开始 附一张 PNG 卡片（含真实牌图、和牌全手牌、QQ 头像、段位分进度条）；渲染或发图失败会自动回退纯文本，不影响推送。关闭后只发文字"
+    },
+    {
+      "key": "card_theme",
+      "label": "图片卡主题（dark / light）",
+      "type": "str",
+      "default": "dark",
+      "desc": "dark=深墨绿+金（默认，贴雀魂牌桌观感）；light=浅色主题"
+    },
+    {
+      "key": "long_conn_enabled",
+      "label": "长连接实时监听（实验）",
+      "type": "bool",
+      "default": false,
+      "desc": "Phase 2 增强：用 WebSocket 长连接监听好友状态事件（秒级）；默认关，轮询稳定后再开"
+    }
+  ],
+  "dependencies": ["protobuf>=4.22,<5", "websockets>=15", "pillow>=9"]
+}

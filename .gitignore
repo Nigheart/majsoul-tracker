@@ -1,0 +1,30 @@
+# ---- 运行时数据（不入库）----
+plugin_data/
+data/
+*.log
+
+# ---- 本地配置与凭据（严禁入库）----
+_localdata/
+secrets.json
+*_secrets.json
+.env
+.env.*
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# ---- 编辑器 / 系统 ----
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ---- 临时预览产物 ----
+docs/_previews/
+_previews/
