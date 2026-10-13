@@ -2,6 +2,7 @@
   "name": "majsoul_tracker",
   "version": "0.1.0",
   "author": "Nigheart",
+  "license": "MIT",
   "description": "关注群友雀魂账号状态：对局结果推送（Phase 1）+ 实时对局状态提示与同室对战播报（Phase 2）+ 牌谱链接明细查询（/雀魂牌谱）+ 麻将 AI 复盘（/雀魂分析）",
   "entry": "main.py",
   "permissions": ["send_message", "read_data", "write_data", "scheduler", "http"],
