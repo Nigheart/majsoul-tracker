@@ -19,18 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----------------------------------------------------------------------------
-
-NOTICE — third-party content NOT covered by the MIT license above:
-
-  * assets/tiles/    (mahjong tile images)
-  * assets/levels/   (rank icons)
-  * ms/              (Majsoul protocol definitions: liqi.json, protocol_pb2.py)
-
-  The copyright of the above belongs to the Majsoul (猫粮工作室) authors.
-  They are included here for personal, non-commercial use only, and are
-  explicitly excluded from the MIT grant above.
-
-  This project is an unofficial third-party tool and is not affiliated with
-  or endorsed by the Majsoul developers.
