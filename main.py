@@ -56,6 +56,9 @@ DEFAULTS: dict = {
     # ★ 2026-09-22 图片卡：对局结果 / 同室战报 / 对局开始 附 PNG 卡片（失败自动回退纯文本）
     "image_cards": True,
     "card_theme": "dark",
+    # ★ 2026-10-28 新增（用户要求）：信息内是否附带牌谱链接；关闭 = 插件发出的**任何**消息
+    #   都不带牌谱链接（推送 + /雀魂牌谱 回复），查询与 AI 复盘功能本身不受影响。
+    "paipu_links_enabled": True,
 }
 
 # ★ 2026-09-28（Feature-07）牌谱查询用法提示（解析不出 uuid 时回给用户）
@@ -726,7 +729,10 @@ async def _(bot: Bot, event: MessageEvent, matcher: Matcher, args: Message = Com
                                             {**detail, "theme": theme})
         except Exception as e:  # noqa: BLE001 —— 渲染失败回退完整文本（铁律 14）
             _log(f"渲染牌谱明细卡失败，回退纯文本：{type(e).__name__}: {e}")
-    out = paipu_parser.format_paipu_detail(detail, compact=image is not None)
+    out = paipu_parser.format_paipu_detail(
+        detail, compact=image is not None,
+        # ★ 2026-10-28：与推送同一开关——关闭后连查询回复也不带牌谱链接
+        with_paipu=bool(_settings().get("paipu_links_enabled", True)))
     if res.get("from_cache"):
         out += "\n（本地缓存命中，未重复拉取牌谱）"
     await _finish_card(matcher, out, [image] if image else [])
@@ -940,6 +946,8 @@ def _register_job() -> None:
                     rate_limit=int(st.get("push_rate_limit") or 5),
                     room_battle_enabled=bool(st.get("room_battle_enabled", True)),
                     first_backfill=bool(st.get("first_bind_backfill", False)),
+                    # ★ 2026-10-28：牌谱链接总开关（关闭 = 推送信息内不带任何牌谱链接）
+                    with_paipu=bool(st.get("paipu_links_enabled", True)),
                     commentary_settings={
                         "commentary_enabled": bool(st.get("commentary_enabled", True)),
                         "commentary_gap_levels": st.get("commentary_gap_levels") or "200,100,50",

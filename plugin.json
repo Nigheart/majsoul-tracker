@@ -86,6 +86,13 @@
       "desc": "同一群多个已绑定群友进入同一好友房时，推送「xxx、xxx 在房间 xxxxx 决一死战！」"
     },
     {
+      "key": "paipu_links_enabled",
+      "label": "信息内附带牌谱链接",
+      "type": "bool",
+      "default": true,
+      "desc": "开启（默认）：对局结果 / 同室战报 / 牌谱明细等消息末尾附一条雀魂牌谱分享链接；关闭后，插件发出的**任何**消息都不再带牌谱链接（含 /雀魂牌谱 的回复），牌谱查询与 AI 复盘本身不受影响"
+    },
+    {
       "key": "commentary_enabled",
       "label": "对局结果增强评论",
       "type": "bool",

@@ -235,9 +235,10 @@ append_plugin_log(plugin, level=, event=, message=)   # 运行日志
 | `commentary_gap_levels` | `200,100,50` | 升/降段临界提示档位（分） |
 | `image_cards` | true | 推送附图片卡片（失败自动回退纯文本） |
 | `card_theme` | dark | 卡片主题（dark / light） |
+| `paipu_links_enabled` | true | 信息内附带牌谱链接；关闭后任何推送/回复都不带链接（查询与 AI 复盘不受影响） |
 | `heartbeat_interval` | 300 | 平静期日志心跳间隔（秒） |
 
-完整 19 项见 [`plugin.json`](plugin.json)。
+完整 20 项见 [`plugin.json`](plugin.json)。
 
 ---
 
